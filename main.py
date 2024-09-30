@@ -66,13 +66,16 @@ app = Flask(__name__)
 def index():
     return "Bot is running!"
 
-def run_bot() -> None:
+# Create the application and pass it your bot's token
+application = ApplicationBuilder().token('YOUR_BOT_TOKEN').build()
+application.add_handler(CommandHandler("start", start))
+application.add_handler(CommandHandler("help", help_command))
+application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, unknown))
+
+# Start the bot
+def start_bot():
     setup_database()
-    application = ApplicationBuilder().token('YOUR_BOT_TOKEN').build()
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("help", help_command))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, unknown))
     application.run_polling()
 
 if __name__ == '__main__':
-    run_bot()
+    start_bot()
