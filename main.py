@@ -5,6 +5,7 @@ from telegram import Update, ForceReply
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 )
+from flask import Flask
 
 # Configure logging
 logging.basicConfig(
@@ -38,7 +39,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         rf"Hi {user.mention_html()}! Welcome to the bot!",
         reply_markup=ForceReply(selective=True),
     )
-
     # Save user to the database
     save_user(user)
 
@@ -59,19 +59,20 @@ def save_user(user):
 async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Sorry, I didn't understand that command.")
 
-def main() -> None:
+# Create a Flask app
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return "Bot is running!"
+
+def run_bot() -> None:
     setup_database()
-
-    # Create the application and pass it your bot's token
     application = ApplicationBuilder().token('YOUR_BOT_TOKEN').build()
-
-    # Register command handlers
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, unknown))
-
-    # Run the bot until you press Ctrl-C
     application.run_polling()
 
 if __name__ == '__main__':
-    main()
+    run_bot()
