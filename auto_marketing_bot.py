@@ -1,7 +1,8 @@
 from flask import Flask, request
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CommandHandler
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 import os
+import logging
 
 # Channel URL and ID
 CHANNEL_URL = "https://t.me/+C8R6wRn_VCBlZDZi"
@@ -9,6 +10,14 @@ YOUR_CHAT_ID = -1002264086096  # Replace with your actual channel ID
 
 # Initialize Flask app
 app = Flask(__name__)
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Create the Telegram bot application
+TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', '7670904840:AAHF_YR2JkHkhMWidKL_8j0EjR8E33BSaZY')  # Use environment variable for token
+app_bot = ApplicationBuilder().token(TOKEN).build()
 
 # Start command handler
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -33,9 +42,6 @@ async def scheduled_promotion_3(context):
         text=f"💬 Bleiben Sie dran! Wir veröffentlichen regelmäßig wertvolle Inhalte. Laden Sie andere ein, davon zu profitieren {CHANNEL_URL}."
     )
 
-# Create the Telegram bot application
-app_bot = ApplicationBuilder().token('7670904840:AAHF_YR2JkHkhMWidKL_8j0EjR8E33BSaZY').build()
-
 # Command Handlers
 app_bot.add_handler(CommandHandler("start", start))
 
@@ -47,9 +53,13 @@ job_queue.run_repeating(scheduled_promotion_3, interval=10800, first=60)  # Ever
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    update = Update.de_json(request.get_json(force=True), app_bot)
-    app_bot.process_update(update)  # Process the incoming update
-    return "OK", 200  # Respond to Telegram
+    try:
+        update = Update.de_json(request.get_json(force=True), app_bot)
+        app_bot.process_update(update)  # Process the incoming update
+        return "OK", 200  # Respond to Telegram
+    except Exception as e:
+        logger.error(f"Error processing update: {e}")
+        return "Bad Request", 400  # Respond with error if processing fails
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
