@@ -5,7 +5,7 @@ from telegram import Update, ForceReply
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 )
-from flask import Flask  # Import Flask
+from flask import Flask, request  # Import Flask and request
 
 # Initialize Flask app
 app = Flask(__name__)  # This is your Flask app instance
@@ -63,10 +63,17 @@ def save_user(user):
 async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Sorry, I didn't understand that command.")
 
+@app.route('/webhook', methods=['POST'])  # Flask route for webhook
+def webhook():
+    update = Update.de_json(request.get_json(force=True), application)
+    application.process_update(update)  # Process the incoming update
+    return "OK", 200  # Respond to Telegram
+
 def main() -> None:
     setup_database()
 
     # Create the application and pass it your bot's token
+    global application  # Declare application as global to access in webhook
     application = ApplicationBuilder().token('YOUR_BOT_TOKEN').build()
 
     # Register command handlers
