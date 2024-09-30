@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 # Channel URL and ID
-CHANNEL_URL = "https://t.me/KlonkarteundFalschgeldzumVerkauf"
+CHANNEL_URL = "https://t.me/+C8R6wRn_VCBlZDZi"
 YOUR_CHAT_ID = -1002264086096  # Replace with your actual channel ID
 
 # Start command handler
@@ -30,7 +30,7 @@ async def scheduled_promotion_3(context):
 
 # Main function to set up the bot and schedule messages
 def main():
-    app = ApplicationBuilder().token('8059136622:AAEm1qo2-ph3sNjPr-2xG99gzdSYpFtWYJU').read_timeout(10).write_timeout(10).build()  # Increase timeout
+    app = ApplicationBuilder().token('7670904840:AAHF_YR2JkHkhMWidKL_8j0EjR8E33BSaZY').read_timeout(10).write_timeout(10).build()  # Increase timeout
     
     # Command Handlers
     app.add_handler(CommandHandler("start", start))
