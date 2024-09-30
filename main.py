@@ -39,13 +39,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         rf"Hi {user.mention_html()}! Welcome to the bot!",
         reply_markup=ForceReply(selective=True),
     )
-    # Save user to the database
     save_user(user)
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Help!")
 
-# Function to save user to the database
 def save_user(user):
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
